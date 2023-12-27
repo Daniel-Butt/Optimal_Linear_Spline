@@ -15,16 +15,24 @@ double foo(double x) {
     return 4.3 * pow(x, 3) - 2.3 * pow(x, 2) - 6.6 * x + 2.6; // [0.379, 1.343] 
 }
 
+double SIN(double x) {
+    return sin(x);
+}
  
 int main(){
 
-    auto result = OLS::fitSpline(f, { 0.0, 1.0 }, OLS::refined, 0.001, 1e-7).second;
+    auto result = OLS::fitSpline(SIN, { 0.0, (3.141592653589793) / 2.0 }, OLS::refined, 0.000001, 1e-14).second;
 
-    auto table = OLS::constructSplineTable(f, result);
+    /*std::cout << result.first << ", " << result.second.size() << std::endl;
+
+    for (const auto& x : result.second)
+        std::cout << x << std::endl;*/
+
+    auto table = OLS::constructSplineTable(SIN, result);
 
     const double x = 0.562;
  
-    printf("Real: %.4f,  Approx: %.4f\n", f(x), OLS::compute(table, x));
+    printf("Real: %.7f,  Approx: %.7f\n", sin(x), table[x]);
 
 
 }

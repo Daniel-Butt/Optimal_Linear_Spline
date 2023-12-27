@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <algorithm> 
 #include "NumericOptimize.h"
 
 
@@ -110,6 +111,33 @@ public:
         double b;
     };
 
+    struct SplineTable {
+        std::vector<LineNode> table;
+
+        double operator[](const double x) {
+
+            //binary search for correct line
+            int lBound = 0;
+            int uBound = (int)table.size();
+
+            while (true) {
+                const int currentIdx = (uBound + lBound) >> 1;
+                const LineNode& node = table[currentIdx];
+
+                if (x < node.minX) {
+                    uBound = currentIdx;
+                }
+                else if (x > node.maxX) {
+                    lBound = currentIdx;
+                }
+                else {
+                    //compute linear interpolation
+                    return node.m * x + node.b;
+                }
+            }
+        }
+    };
+
     static std::pair<double, std::vector<double>> fitSpline(std::function<double(double)> func, std::vector<double> I, const olsMethod method = standard, const double eps = 0.01, const double tol = 1e-7) {
 
         switch (method) {
@@ -125,7 +153,7 @@ public:
         }
     }
 
-    static std::vector<LineNode> constructSplineTable(std::function<double(double)> func, std::vector<double>& knots) {
+    static SplineTable constructSplineTable(std::function<double(double)> func, std::vector<double>& knots) {
 
         const int N = (int)knots.size() - 1;
 
@@ -139,32 +167,7 @@ public:
             lines.emplace_back(knots[i], knots[i + 1], m, b);
         }
 
-        return lines;
-    }
-
-    static double compute(const std::vector<LineNode>& splineTable, const double x) {
-
-        //binary search for correct line
-        int lBound = 0;
-        int uBound = (int)splineTable.size();
-        
-
-        while (true) {
-            const int currentIdx = (uBound + lBound) / 2;
-            const LineNode& node = splineTable[currentIdx];
-
-            if (x < node.minX) {
-                uBound = currentIdx;
-            }
-            else if (x > node.maxX) {
-                lBound = currentIdx;
-            }
-            else {
-                //compute linear interpolation
-                return node.m * x + node.b;
-            }
-        }
-        
+        return SplineTable(lines);
     }
 
 };
