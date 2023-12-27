@@ -21,19 +21,19 @@ double SIN(double x) {
  
 int main(){
 
-    auto result = OLS::fitSpline(SIN, { 0.0, (3.141592653589793) / 2.0 }, OLS::refined, 0.000001, 1e-14).second;
+    auto result = OLS::fitSpline(SIN, { 0.0, (3.141592653589793) / 2.0 }, OLS::refined, 0.001, 1e-14).second;
 
     /*std::cout << result.first << ", " << result.second.size() << std::endl;
 
     for (const auto& x : result.second)
         std::cout << x << std::endl;*/
 
-    auto table = OLS::constructSplineTable(SIN, result);
+    auto sinApprox = OLS::constructSplineTable(SIN, result);
 
     const double x = 0.562;
  
-    printf("Real: %.7f,  Approx: %.7f\n", sin(x), table[x]);
+    printf("Real: %.5f,  Approx: %.5f\n\n", sin(x), sinApprox(x));
 
-
+    std::cout << sinApprox.toString();
 }
 

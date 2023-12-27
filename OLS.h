@@ -6,6 +6,7 @@
 #include <cmath>
 #include <functional>
 #include <algorithm> 
+#include <string>
 #include "NumericOptimize.h"
 
 
@@ -114,7 +115,11 @@ public:
     struct SplineTable {
         std::vector<LineNode> table;
 
-        double operator[](const double x) {
+        LineNode operator[](const int i) {
+            return table[i];
+        }
+
+        double operator()(const double x) {
 
             //binary search for correct line
             int lBound = 0;
@@ -136,6 +141,29 @@ public:
                 }
             }
         }
+
+        int size() {
+            return table.size();
+        }
+
+        constexpr std::vector<LineNode>::iterator begin() {
+            return table.begin();
+        }
+
+        constexpr std::vector<LineNode>::iterator end() {
+            return table.end();
+        }
+
+        std::string toString() {
+            std::string str = "";
+
+            str += "Optimal Table{\n";
+            for (const auto& line : table) {
+                str += "   Line: {\n      min: " + std::to_string(line.minX) + "\n      max: " + std::to_string(line.maxX) + "\n      m: " + std::to_string(line.m) + "\n      b: " + std::to_string(line.b) + "\n   }\n";
+            }
+            str += "}\n";
+        }
+        
     };
 
     static std::pair<double, std::vector<double>> fitSpline(std::function<double(double)> func, std::vector<double> I, const olsMethod method = standard, const double eps = 0.01, const double tol = 1e-7) {
