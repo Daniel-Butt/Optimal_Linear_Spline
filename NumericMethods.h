@@ -4,7 +4,10 @@
 #include <functional>
 #include <array>
 
-class NumericOptimize {
+typedef std::array<std::array<double, 3>, 3> Mat3;
+typedef std::array<double, 3> Vec3;
+
+class NumericMethods {
 
 private:
     static double goldMinimize(std::function<double(double)> f, std::vector<double> I, const double tol = 1e-7) {
@@ -243,6 +246,13 @@ private:
         return 0.0;
     }
 
+    static double det3(Mat3& mat) {
+
+        return mat[0][0] * (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) -
+               mat[0][1] * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) +
+               mat[0][2] * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]);
+    }
+
 
 public:
 
@@ -254,6 +264,29 @@ public:
         const double minX = brentMinimize(func, I, tol);
 
         return { minX, func(minX) };
+    }
+
+    static Vec3 linSolve3(Mat3& A, Vec3& b) {
+
+        //Crammer's rule (probably just as fast for 3x3 but maybe not...)
+
+        const double det_1 = 1.0 / det3(A);
+
+        Mat3 mi = {{ {b[0], A[0][1], A[0][2]},
+                     {b[1], A[1][1], A[1][2]},
+                     {b[2], A[2][1], A[2][2]}  }};
+
+        Mat3 mj = {{ {A[0][0], b[0], A[0][2]},
+                     {A[1][0], b[1], A[1][2]},
+                     {A[2][0], b[2], A[2][2]}  }};
+
+        Mat3 mk = {{ {A[0][0], A[0][1], b[0]},
+                     {A[1][0], A[1][1], b[1]},
+                     {A[2][0], A[2][1], b[2]}  }};
+
+
+        return { det3(mi) * det_1, det3(mj) * det_1, det3(mk) * det_1 };
+
     }
 
 };
