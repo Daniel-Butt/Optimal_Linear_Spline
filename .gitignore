@@ -1,6 +1,6 @@
 /.vs
 /x64
-psimpl.h
-optimal_linear_spline.sln
-optimal_linear_spline.vcxproj
-optimal_linear_spline.vcxproj.*
+/Profile_Spline
+Profile_Spline.sln
+Profile_Spline.vcxproj
+Profile_Spline.vcxproj.*
